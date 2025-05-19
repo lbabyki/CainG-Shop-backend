@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Tạo Blog</title>
+    <style>
+      body {
+        font-family: Arial;
+        padding: 20px;
+      }
+      input,
+      textarea,
+      select,
+      button {
+        display: block;
+        margin: 10px 0;
+        width: 400px;
+        padding: 8px;
+      }
+      .block-container {
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Tạo Blog Mới</h2>
+    <form id="blogForm">
+      <input type="text" name="title" placeholder="Tiêu đề blog" required />
+      <input type="text" name="authorId" placeholder="ID người viết" required />
+      <input
+        type="text"
+        name="authorName"
+        placeholder="Tên người viết"
+        required
+      />
+
+      <input type="text" name="image" placeholder="Link hình ảnh (image URL)" />
+      <textarea
+        name="sumary"
+        placeholder="Tóm tắt nội dung"
+        rows="3"
+      ></textarea>
+
+      <label>Danh mục:</label>
+      <select name="categoryId" id="categorySelect" required></select>
+
+      <label>Ngày xuất bản:</label>
+      <input type="datetime-local" name="publishedAt" />
+
+      <h4>Nội dung blog:</h4>
+      <div id="contentBlocks"></div>
+      <button type="button" id="addBlock">+ Thêm block nội dung</button>
+
+      <h4>Liên kết chia sẻ:</h4>
+      <input type="text" name="facebook" placeholder="Facebook URL" />
+      <input type="text" name="twitter" placeholder="Twitter URL" />
+      <input type="text" name="pinterest" placeholder="Pinterest URL" />
+
+      <button type="submit">Tạo blog</button>
+    </form>
+
+    <div id="result"></div>
+    <div id="blog"></div>
+
+    <script>
+      const form = document.getElementById("blogForm");
+      const result = document.getElementById("result");
+      const categorySelect = document.getElementById("categorySelect");
+      const contentBlocksDiv = document.getElementById("contentBlocks");
+      const addBlockBtn = document.getElementById("addBlock");
+      const blogBlock = document.getElementById("blog");
+
+      // ✅ Thêm block nội dung mới
+      addBlockBtn.addEventListener("click", () => {
+        const block = document.createElement("textarea");
+        block.name = "contentBlock";
+        block.placeholder = "Nhập nội dung block...";
+        block.rows = 4;
+        contentBlocksDiv.appendChild(block);
+      });
+
+      // ✅ Load danh mục từ server
+      async function loadCategories() {
+        const res = await fetch("http://localhost:3026/api/categories");
+        const data = await res.json();
+        data.forEach((cat) => {
+          const option = document.createElement("option");
+          option.value = cat._id;
+          option.textContent = cat.name;
+          categorySelect.appendChild(option);
+        });
+      }
+
+      loadCategories();
+
+      // ✅ Gửi blog
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+
+        // Lấy nội dung các block
+        const blocks = Array.from(document.getElementsByName("contentBlock"))
+          .map((el) => el.value.trim())
+          .filter((text) => text.length > 0);
+
+        // Tạo đối tượng blog để gửi
+        const blog = {
+          title: formData.get("title"),
+          author: {
+            userId: formData.get("authorId"),
+            name: formData.get("authorName"),
+          },
+          image: formData.get("image"),
+          sumary: formData.get("sumary"),
+          category: formData.get("categoryId"),
+          publishedAt: formData.get("publishedAt"),
+          contentBlocks: blocks,
+          shareLinks: {
+            facebook: formData.get("facebook"),
+            twitter: formData.get("twitter"),
+            pinterest: formData.get("pinterest"),
+          },
+        };
+
+        // Gửi POST tới server
+        const res = await fetch("https://be.myporfolio.io.vn/api/blogs", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(blog),
+        });
+
+        const created = await res.json();
+        result.innerHTML = `<pre>${JSON.stringify(created, null, 2)}</pre>`;
+
+        // Tải lại danh sách blog
+        loadBlogs();
+      });
+
+      // ✅ Load danh sách blog
+      async function loadBlogs() {
+        try {
+          const blogs = await fetch("https://be.myporfolio.io.vn/api/blogs");
+          const dataBlogs = await blogs.json();
+
+          blogBlock.innerHTML = dataBlogs
+            .map((blog) => {
+              return `
+                <div class="blog">
+                  <h2>${blog.title}</h2>
+                  <img src="${blog.image || ""}" alt="Ảnh" width="200" />
+                  <p><strong>Tác giả:</strong> ${
+                    blog.author?.name || "Không rõ"
+                  }</p>
+                  <p><strong>Ngày đăng:</strong> ${
+                    blog.publishedAt
+                      ? new Date(blog.publishedAt).toLocaleDateString()
+                      : "Không có"
+                  }</p>
+                  <p><strong>Tóm tắt:</strong> ${blog.sumary || ""}</p>
+                  <div>
+                    ${blog.contentBlocks
+                      .map((block) => `<p>${block}</p>`)
+                      .join("")}
+                  </div>
+                  <p><strong>Chia sẻ:</strong> 
+                    <a href="${
+                      blog.shareLinks?.facebook
+                    }" target="_blank">Facebook</a> | 
+                    <a href="${
+                      blog.shareLinks?.twitter
+                    }" target="_blank">Twitter</a> | 
+                    <a href="${
+                      blog.shareLinks?.pinterest
+                    }" target="_blank">Pinterest</a>
+                  </p>
+                  <hr />
+                </div>
+              `;
+            })
+            .join("");
+
+          console.log(dataBlogs);
+        } catch (err) {
+          console.error("Lỗi khi tải blog:", err);
+        }
+      }
+
+      loadBlogs();
+    </script>
+  </body>
+</html>

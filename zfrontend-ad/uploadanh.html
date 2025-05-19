@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Upload Image</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 2rem;
+      }
+      input,
+      button {
+        margin-top: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Upload ảnh</h2>
+
+    <input type="file" id="fileInput" accept="image/*" />
+    <br />
+    <button onclick="uploadImage()">Upload</button>
+
+    <h3>Kết quả:</h3>
+    <pre id="result"></pre>
+
+    <script>
+      async function uploadImage() {
+        const fileInput = document.getElementById("fileInput");
+        const result = document.getElementById("result");
+
+        if (!fileInput.files.length) {
+          result.textContent = "Vui lòng chọn một ảnh!";
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("image", fileInput.files[0]);
+
+        try {
+          const response = await fetch(
+            "https://be.myporfolio.io.vn/api/upload",
+            {
+              method: "POST",
+              body: formData,
+              // Nếu cần token:
+              // headers: { Authorization: 'Bearer YOUR_TOKEN' }
+            }
+          );
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            result.textContent = "Lỗi: " + (data.message || "Không xác định");
+          } else {
+            result.textContent =
+              "Upload thành công!\nTên file: " + data.filename;
+          }
+        } catch (err) {
+          result.textContent = "Lỗi kết nối: " + err.message;
+        }
+      }
+    </script>
+  </body>
+</html>

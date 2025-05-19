@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Tạo Product</title>
+    <style>
+      body {
+        font-family: Arial;
+        padding: 20px;
+      }
+      input,
+      textarea,
+      select {
+        display: block;
+        margin: 10px 0;
+        width: 300px;
+      }
+      button {
+        padding: 8px 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Tạo Sản Phẩm Mới</h2>
+    <form id="productForm">
+      <input type="text" name="name" placeholder="Tên sản phẩm" required />
+      <input type="text" name="slug" placeholder="Slug (url)" required />
+      <input type="number" name="price" placeholder="Giá" required />
+      <textarea name="description" placeholder="Mô tả"></textarea>
+      <textarea name="subdescription" placeholder="Mô tả phụ"></textarea>
+      <input type="number" name="stock" placeholder="Tồn kho" />
+      <input type="file" name="images" multiple accept="image/*" />
+
+      <!-- Danh mục -->
+      <label>Chọn danh mục (giữ Ctrl để chọn nhiều):</label>
+      <select name="categories" multiple id="categorySelect"></select>
+
+      <!-- Thông tin bổ sung -->
+      <h4>Thông tin thêm:</h4>
+      <input type="text" name="weight" placeholder="Khối lượng" />
+      <input type="text" name="dimensions" placeholder="Kích thước" />
+      <input type="text" name="material" placeholder="Chất liệu" />
+      <input
+        type="text"
+        name="colours"
+        placeholder="Màu (cách nhau bằng dấu phẩy)"
+      />
+
+      <button type="submit">Tạo sản phẩm</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+      const form = document.getElementById("productForm");
+      const result = document.getElementById("result");
+      const categorySelect = document.getElementById("categorySelect");
+
+      // ✅ Lấy danh mục từ server
+      async function loadCategories() {
+        const res = await fetch("https://be.myporfolio.io.vn/api/categories");
+        const data = await res.json();
+        data.forEach((cat) => {
+          const option = document.createElement("option");
+          option.value = cat._id;
+          option.textContent = cat.name;
+          categorySelect.appendChild(option);
+        });
+      }
+
+      loadCategories();
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+        const imageFiles = formData.getAll("images");
+
+        // ✅ Upload ảnh
+        const uploadedPaths = [];
+        for (const img of imageFiles) {
+          const imageData = new FormData();
+          imageData.append("image", img);
+          const res = await fetch("https://be.myporfolio.io.vn/api/upload", {
+            method: "POST",
+            body: imageData,
+          });
+          const data = await res.json();
+          if (data.image) {
+            uploadedPaths.push(data.image); // chỉ đẩy ảnh hợp lệ
+          }
+          // Lưu path ảnh trả về
+        }
+
+        // ✅ Lấy danh sách category được chọn
+        const selectedCategories = Array.from(
+          categorySelect.selectedOptions
+        ).map((opt) => opt.value);
+
+        // ✅ Gửi dữ liệu product
+        const product = {
+          name: formData.get("name"),
+          slug: formData.get("slug"),
+          price: Number(formData.get("price")),
+          description: formData.get("description"),
+          subdescription: formData.get("subdescription"),
+          stock: Number(formData.get("stock")),
+          images: uploadedPaths,
+          category: selectedCategories,
+          additionalInfo: {
+            weight: formData.get("weight"),
+            dimensions: formData.get("dimensions"),
+            material: formData.get("material"),
+            colours: formData
+              .get("colours")
+              .split(",")
+              .map((c) => c.trim()),
+          },
+        };
+
+        const res = await fetch("https://be.myporfolio.io.vn/api/products", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(product),
+        });
+
+        const created = await res.json();
+        result.innerHTML = `<pre>${JSON.stringify(created, null, 2)}</pre>`;
+      });
+    </script>
+  </body>
+</html>

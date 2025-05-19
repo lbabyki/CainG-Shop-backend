@@ -1,0 +1,147 @@
+//product
+{
+  _id: ObjectId,
+  name: "Nhẫn vàng 24K đính đá",
+  slug: "nhan-vang-24k-dinh-da", // Dùng cho URL
+  price: 3200000,
+  description: "Thiết kế tinh xảo và sang trọng...",
+  images: [
+    "/images/nhanvang-1.jpg",
+    "/images/nhanvang-2.jpg",
+    "/images/nhanvang-3.jpg"
+  ],
+  category: ObjectId, // Tham chiếu đến collection Categories
+  additionalInfo: {
+    weight: "5g",
+    dimensions: "2 x 2 x 1 cm",
+    colours: ["Vàng", "Trắng"],
+    material: "Vàng 24K"
+  },
+  stock: 10,
+  isFeatured: false, // Hiển thị nổi bật ở trang chủ không
+  averageRating: 4.5, // Điểm trung bình từ review
+  numReviews: 12, // Số lượng đánh giá
+  createdAt: ISODate,
+  updatedAt: ISODate
+}
+//review
+{
+  _id: ObjectId,
+  productId: ObjectId,
+  userId: ObjectId,
+  rating: 5, // số sao từ 1 đến 5
+  comment: "Chất lượng tuyệt vời, giao hàng nhanh!",
+  createdAt: ISODate
+}
+//Category 
+{
+  _id: ObjectId,
+  name: "Nhẫn",
+  slug: "nhan",
+  description: "Các loại nhẫn vàng, bạc, kim cương",
+  createdAt: ISODate
+}
+
+//user
+{
+  _id: ObjectId,
+  firstName: "Lê",
+  lastName: "Hoàng Giang",
+  displayName: "Giang Lê", // Tên hiển thị
+  companyName: "Samsung",
+  creditCard: 1265490817523,
+  country: "Vietnam",
+  streetAddress: "Đường 5",
+  postcode: "70000",
+  city: "Biên Hoà", // Town/City
+  phone: "0909617596",
+  email: "crglh25@gmail.com",
+  password: "mã hóa", // đã hash (bcrypt hoặc tương tự)
+  role: "customer", // hoặc "admin"
+  createdAt: ISODate,
+  updatedAt: ISODate
+}
+
+// Cart
+{
+  "_id": ObjectId,
+  "userId": ObjectId,
+  "items": [
+    {
+      "productId": ObjectId,
+      "quantity": 2
+    }
+  ],
+  "updatedAt": ISODate
+}
+//order
+{
+  _id: ObjectId, // chính là order number
+  userId: ObjectId, // liên kết đến người dùng đặt hàng
+  email: "crglh25@gmail.com", // để tiện gửi email xác nhận
+  phone: "0909617596", // liên hệ người nhận
+  paymentMethod: "Credit Card", // hoặc "COD", "PayPal", v.v.
+  orderDate: ISODate, // ngày đặt hàng
+  deliveryOption: "Fast Shipping", // hoặc "Standard", "In-store pickup", v.v.
+  deliveryAddress: {
+    street: "asdf",
+    city: "Hồ Chí Minh",
+    country: "Vietnam",
+    postcode: "700000"
+  },
+  items: [
+    {
+      productId: ObjectId,
+      name: "Nhẫn vàng 24K đính đá", // tên sản phẩm để hiển thị
+      price: 3200000,
+      quantity: 1,
+      imageUrl: "/images/nhanvang.jpg" // để hiển thị trong đơn hàng
+    }
+  ],
+  total: 3200000, // tổng tiền đã thanh toán
+  status: "Processing", // trạng thái: Processing, Shipped, Delivered, Cancelled
+  createdAt: ISODate,
+  updatedAt: ISODate
+}
+
+//blog
+{
+  _id: ObjectId,
+  title: "Làm thế nào để chọn nhẫn phù hợp",
+
+  author: {
+    userId: ObjectId,        // Tham chiếu đến User
+    name: "Lê Hoàng Giang"   // Snapshot tên tại thời điểm đăng
+  },
+
+  category: ObjectId,        // Tham chiếu đến bảng `categories`
+  publishedAt: ISODate("2025-05-16T10:00:00Z"),
+
+  contentBlocks: [
+    "<img src='/images/blogs/main1.jpg' alt='Hình đại diện' />",
+    "<img src='/images/blogs/detail1.jpg' alt='Chi tiết mặt nhẫn' />",
+    "<p>Việc chọn nhẫn phù hợp giúp tôn lên phong cách cá nhân...</p>",
+    "<ul><li>Chọn theo mệnh</li><li>Chọn theo chất liệu</li><li>Chọn theo dịp sử dụng</li></ul>"
+  ],
+
+  shareLinks: {
+    facebook: "https://www.facebook.com/sharer/sharer.php?u=https://yourdomain.com/blog/lam-the-nao-chon-nhan",
+    twitter: "https://twitter.com/intent/tweet?url=https://yourdomain.com/blog/lam-the-nao-chon-nhan",
+    pinterest: "https://pinterest.com/pin/create/button/?url=https://yourdomain.com/blog/lam-the-nao-chon-nhan"
+  },
+
+  comments: [
+    {
+      name: "Nguyễn Văn B",
+      postedAt: ISODate("2025-05-16T12:30:00Z"),
+      content: "Bài viết rất hữu ích, cảm ơn!",
+      replies: [
+        {
+          name: "Lê Hoàng Giang",
+          postedAt: ISODate("2025-05-16T14:00:00Z"),
+          content: "Rất vui vì bạn thấy hữu ích!"
+        }
+      ]
+    }
+  ]
+}

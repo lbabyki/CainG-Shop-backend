@@ -1,0 +1,56 @@
+###
+POST http://localhost:3026/api/users/register
+Content-Type: application/json
+
+{
+    "email": "lhoanggiang@gmail.com",
+    "password": "123456"
+}
+###
+POST http://localhost:3026/api/users/login
+Content-Type: application/json
+
+{
+    "email": "crglh25@gmail.com",
+    "password": "123456"
+}
+###
+GET http://localhost:3026/api/users
+Headers:
+  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODI3Mzk0YjM3OTQxMTk1ZTFmYWNlMTgiLCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3NDc1NDQzNjAsImV4cCI6MTc0NzYzMDc2MH0.Ni_rDmuQcR1bmRyC_rzChGu988oj8mmBR6hZ_Cp_igs
+###
+PUT http://localhost:3026/api/users/68273533163c9eb362981020
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODI3MzUzMzE2M2M5ZWIzNjI5ODEwMjAiLCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3NDc1NzAxNzksImV4cCI6MTc0NzY1NjU3OX0.1bsnkS9G38a_5TyibdpS4zjW-VWiv5XKVxkLSsQ3n64
+Content-Type: application/json
+
+{
+    "companyName": "LHU"
+}
+
+###
+GET http://localhost:3026/api/categories
+###
+POST  http://localhost:3026/api/categories
+Content-Type: application/json
+
+{
+    "name": "Fashion",
+    "slug": "fashion"
+}
+###
+
+PUT http://localhost:3026/api/products/68274ff71e43995be803378f
+Content-Type: application/json
+
+{
+"category": ["68274377e630ec76fc5a787d"]
+}
+###
+GET http://localhost:3026/api/categories
+###
+
+Dây chuyền được thợ tạo kim tài ba làm ra với kỹ năng sắc xảo tỉ mỉ. Dây chuyền được tạo ra cho những anh máu mặt thích tỏ ra thượng đẳng
+
+
+###
+GET http://localhost:3026/api/orders/6829a46262ad0085b879e239
