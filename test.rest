@@ -28,7 +28,9 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:3026/api/categories
+GET https://be.myporfolio.io.vn/api/blogs
+###
+DELETE  https://be.myporfolio.io.vn/api/blogs/682b5f5b6088992d2928d9ae
 ###
 POST  http://localhost:3026/api/categories
 Content-Type: application/json

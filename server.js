@@ -9,6 +9,7 @@ const cartRoutes = require("./routes/cartRoute");
 const blogRoutes = require("./routes/blogRoute");
 const categoryRoutes = require("./routes/categoryRoute");
 const reviewRoutes = require("./routes/reviewRoute");
+const timeRoutes = require("./routes/timeRoute");
 //upload ảnh.
 const uploadRoutes = require("./routes/uploadImgRoute");
 const PORT = process.env.PORT;
@@ -31,6 +32,8 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/carts", cartRoutes);
 app.use("/api/upload", uploadRoutes);
+//time
+app.use("/time", timeRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);

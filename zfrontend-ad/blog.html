@@ -83,7 +83,7 @@
 
       // ✅ Load danh mục từ server
       async function loadCategories() {
-        const res = await fetch("http://localhost:3026/api/categories");
+        const res = await fetch("https://be.myporfolio.io.vn/api/categories");
         const data = await res.json();
         data.forEach((cat) => {
           const option = document.createElement("option");
