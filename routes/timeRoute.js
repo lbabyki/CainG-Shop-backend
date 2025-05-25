@@ -4,4 +4,4 @@ const timeController = require("../controllers/timeController");
 
 router.get("/", timeController.GetTime);
 
-exports.module = router;
+module.exports = router;
